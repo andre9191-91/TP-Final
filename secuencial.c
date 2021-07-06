@@ -444,7 +444,7 @@ int main( int argc, char *argv[] ){
 	inicializar_matriz( );
 	tiempo_inicial= clock();
 	time_t tInicial, tFinal;
-    time(&tInicial)
+    time(&tInicial);
 	
 	// Imprimimos la matriz
 	//imprimir_matriz( );
