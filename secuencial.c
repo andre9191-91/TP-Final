@@ -475,7 +475,7 @@ int main( int argc, char *argv[] ){
 	duracion= double (tiempo_final - tiempo_inicial); 
 	duracion/= CLOCKS_PER_SEC; 
 	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
-	
+	//hola 
 	printf("Time : %ld seconds.\n", tDuracion);
 	system("pause");
 	return 0;
