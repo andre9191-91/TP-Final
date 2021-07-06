@@ -472,7 +472,7 @@ int main( int argc, char *argv[] ){
     time_t tDuracion = tFinal - tInicial;
 	free( matriz );
 	
-	duracion= double (tiempo_final - tiempo_inicial); 
+	duracion= double(tiempo_final - tiempo_inicial); 
 	duracion/= CLOCKS_PER_SEC; 
 	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
 	//hola 
