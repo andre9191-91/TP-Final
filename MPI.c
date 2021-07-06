@@ -1,10 +1,15 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include <string.h>
+#include <mpi.h>
 
 /*
-Se compila: gcc secuencial.c -o sec
-Se ejecuta: ./sec tamaño_matriz semanas
+Trabajo Práctico Final - MPI 
+Maldonado Andrea 
+Moran Marcos 
+
+Se compila: mpicc MPI.c -o mpi
+Se ejecuta: mpirun -np 4 ./mpi tamaño_matriz semanas
 
 Los colores de las plantas son:
 	o Blanco: Árbol podado
@@ -14,7 +19,7 @@ Los colores de las plantas son:
 	o Verde: Árbol sano
 */
 
-// Defino el tipo de celda
+// Defino el tipo de planta
 typedef struct planta{
 	int estado; 	/* Blanco = 0;  Azul = 1; Rojo = 2; Naranja = 3; Verde = 4;		*/ 
 	int edad; 		/* Joven = 0 , Adulto = 1, Viejo = 2 							*/
@@ -23,19 +28,18 @@ typedef struct planta{
 	} planta;
 
 // Defino la matriz y una auxiliar para calcular las actualizaciones	
-planta **matriz, **aux;
+planta **matriz, *buffer, *resultado_aux, **matriz_resultado, *resultado_aux;
 
 // Defino el tamaño de la matriz y la cantidad de semanas
-int tam , semanas ;
+int tam, semanas, n , proceso , cantidad_procesos;
 
 void inicializar_matriz( ){
 	
-	int s, fila, columna, random;
-	
-			  
-	for( fila = 0; fila < tam; fila++ ) {
+	int fila, columna, random;
+	  
+	for( fila = 0; fila < n; fila++ ) {
 			
-		for( columna = 0; columna < tam; columna++ ) {
+		for( columna = 0; columna < n; columna++ ) {
 		    
             matriz[fila][columna].semana = 0;
 			matriz[fila][columna].herida = 0;
@@ -100,7 +104,7 @@ void inicializar_matriz( ){
                 }
 			
 			}
-		}
+		}	
 		
 	}
 
@@ -109,8 +113,8 @@ void imprimir_matriz( ){
 	
 	int fila, columna;
 	
-	for( fila = 0; fila < tam; fila++ ){
-		for( columna = 0; columna < tam; columna++ ){
+	for( fila = 0; fila < n; fila++ ){
+		for( columna = 0; columna < n; columna++ ){
 			printf( " %d ",matriz[fila][columna].estado);
 			}
 		printf( "\n");
@@ -215,12 +219,12 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
      // Calculamos la cantidad de vecinos
      
      // Tenemos 8 Vecinos, por lo tanto no estoy ni en los esquineros ni en los bordes
-     if( fila !=0 && fila != tam-1 && columna != 0 && columna != tam-1 ){ 
+     if( fila !=0 && fila != n-1 && columna != 0 && columna != n-1 )
      	cantidad_vecinos = 8;
-         }
+         
      else{
         // Tenemos 3 Vecinos, por lo tanto estoy en algun esquinero
-        if( ( fila == 0 && columna == 0 ) || ( fila == 0 && columna == tam-1 ) || ( fila == tam-1 && columna == 0 ) || ( fila == tam-1 && columna == tam-1 ) ){ 
+        if( ( fila == 0 && columna == 0 ) || ( fila == 0 && columna == n-1 ) || ( fila == n-1 && columna == 0 ) || ( fila == n-1 && columna == n-1 ) ){ 
             cantidad_vecinos = 3;
             }
         // Tenemos 5 Vecinos, por lo tanto no estoy ni en los esquineros ni en los bordes
@@ -239,19 +243,19 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
                     limite_inferior_fila    = fila; 
                     limite_inferior_columna = columna;
                     }
-                if( fila ==0 && columna == tam-1 ){
+                if( fila ==0 && columna == n-1 ){
                     limite_superior_fila    = fila + 2; 
                     limite_superior_columna = columna + 1;
                     limite_inferior_fila    = fila; 
                     limite_inferior_columna = columna - 1; 
                     }
-                if( fila == tam-1 && columna == 0 ){
+                if( fila == n-1 && columna == 0 ){
                     limite_superior_fila     = fila + 1;
                     limite_superior_columna  = columna + 2;
                     limite_inferior_fila     = fila - 1;
                     limite_inferior_columna  = columna;
                     }
-                if( fila == tam-1 && columna == tam-1 ){
+                if( fila == n-1 && columna == n-1 ){
                     limite_superior_fila      = fila + 1;
                     limite_superior_columna   = columna + 1;
                     limite_inferior_fila      = fila - 1;
@@ -273,13 +277,13 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
                      limite_inferior_fila     = fila; 
                      limite_inferior_columna  = columna - 1; 
                      }
-                 if( columna == tam-1 ){
+                 if( columna == n-1 ){
                      limite_superior_fila     = fila + 2; 
                      limite_superior_columna  = columna + 1;
                      limite_inferior_fila     = fila - 1; 
                      limite_inferior_columna  = columna - 1; 
                      }
-                 if( fila == tam-1 ){
+                 if( fila == n-1 ){
                      limite_superior_fila     = fila + 1;
                      limite_superior_columna  = columna + 2;
                      limite_inferior_fila     = fila - 1; 
@@ -410,67 +414,196 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
 				}
 		}
 	 
-     matriz[fila][columna].estado = proximo_estado;
+     	matriz[fila][columna].estado = proximo_estado;
      	
-     }
-     
+    }
 	
+void completar_matriz(){
+  int i;
+  
+  planta columna[n], fila[n], posicion , posicionReciv, columnaReciv[n], filaReciv[n];
+  
+  MPI_Status s;
+
+  switch(proceso){
+    case 0: {
+			posicion = matriz[n-2][n-2];
+            
+			for(i=0; i< n-1; i++)
+               columna[i]= matriz[i][n-2];
+            
+			for(i=0; i< n-1; i++)
+               fila[i]= matriz[n-2][i];           
+            
+
+			MPI_Send(&posicion, (sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD);
+            MPI_Recv(&posicion, (sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD,&s);
+            
+			matriz[n-1][n-1] = posicion;
+
+
+            MPI_Send(&columna, n*(sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD);
+            MPI_Recv(&columna, n*(sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD,&s);
+			for(i=0; i< n-1; i++){
+               matriz[i][n-1] = columna[i];
+			}
+
+
+            MPI_Send(&fila, n*(sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD);
+            MPI_Recv(&fila, n*(sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD,&s);
+			for(i=0; i< n-1; i++){
+               matriz[n-1][i] = fila[i];
+			}
+            
+            
+			break;
+			}
+			
+    case 1: {// Columna y fila son vectores de tamaño 5:  0 a 4
+			posicion= matriz[n-2][1];
+            for(i=0; i< n-1; i++)
+               columna[i]= matriz[i][1];
+
+            for(i=1; i< n; i++)
+               fila[i-1]= matriz[n-2][i]; 
+
+            MPI_Send(&posicion, (sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD);
+            MPI_Send(&columna, n*(sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD);
+            MPI_Send(&fila, n*(sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD);
+            
+            MPI_Recv(&posicion, (sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD,&s);
+            MPI_Recv(&columna, n*(sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD,&s);
+            MPI_Recv(&fila, n*(sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD,&s);
+            
+            matriz[n-1][0]=posicion;
+            
+            for(i=0; i< n-1; i++)
+               matriz[i][0]=columna[i];
+            
+            for(i=1; i< n; i++)
+               matriz[n-1][i]=fila[i-1];
+            
+            break;
+			}
+    case 2: {
+			posicion= matriz[1][n-2];
+            for(i=1; i< n; i++)
+               columna[i-1]= matriz[i][n-2];
+            
+            for(i=0; i< n-1; i++)
+               fila[i].estado= matriz[1][i].estado;    
+            
+            MPI_Send(&posicion, (sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD);
+            MPI_Send(&columna, n*(sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD);
+            MPI_Send(&fila, n*(sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD);
+
+            MPI_Recv(&posicion, (sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD,&s);
+            MPI_Recv(&columna, n*(sizeof(planta)), MPI_BYTE, 3, 0,MPI_COMM_WORLD,&s);
+            MPI_Recv(&fila, n*(sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD,&s);
+            
+            matriz[0][n-1]=posicion;
+            
+            for(i=1; i< n; i++)
+               matriz[i][n-1]=columna[i-1];
+            
+            for(i=0; i< n-1; i++)
+               matriz[0][i]=fila[i];
+            break;
+       
+			}
+    case 3: {
+			posicion= matriz[1][1];
+
+            for(i=1; i< n; i++)
+               columna[i-1]= matriz[i][1];
+
+            for(i=1; i< n; i++)
+               fila[i-1]= matriz[1][i]; 
+
+            MPI_Send(&posicion, (sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD);
+            MPI_Recv(&posicion, (sizeof(planta)), MPI_BYTE, 0, 0,MPI_COMM_WORLD,&s);
+            matriz[0][0]=posicion;
+
+            MPI_Send(&columna, n*(sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD);
+            MPI_Recv(&columna, n*(sizeof(planta)), MPI_BYTE, 2, 0,MPI_COMM_WORLD,&s);
+            
+            for(i=1; i< n; i++)
+               matriz[i][0]=columna[i-1];
+
+
+            MPI_Send(&fila, n*(sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD);
+            MPI_Recv(&fila, n*(sizeof(planta)), MPI_BYTE, 1, 0,MPI_COMM_WORLD,&s);
+            for(i=1; i< n; i++)
+               matriz[0][i]=fila[i-1];
+            break;
+			}
+	}
+	
+
+	
+  
+}
 int main( int argc, char *argv[] ){	
 	
-	int s, fila, columna, proximo_estado;
-	clock_t tiempo_inicial , tiempo_final;
-	long int duracion; 
-	
+	int  s, fila, columna, proximo_estado, tam_buff, tam_aux;
+	double Tinicial, Tfinal, duracion; 
+
 	// Obtenemos el tamaño de la matriz que viene por parametro
 	tam = atoi(argv[1]);
 	
+	n=(tam/2)+1;
+
 	// Obtenemos la cantidad de semanas que vienen por parametro
 	semanas = atoi(argv[2]);
 	
-	printf( "Comienza el programa Secuencial \n");
 	
+	
+	MPI_Init(&argc,&argv);
+	MPI_Comm_size(MPI_COMM_WORLD, &cantidad_procesos);
+	MPI_Comm_rank(MPI_COMM_WORLD, &proceso);
 	
 	// Pedimos memoria para toda una fila de la matriz y para la matriz que usaremos para calcular el proximo estado
-	matriz = (planta**) malloc (tam*(sizeof(planta*)));
-	//aux = (planta**) malloc (tam*(sizeof(planta*)));
+	matriz = (planta**) malloc (n*(sizeof(planta*)));
 	
 	// Terminamos de pedir el resto de la memoria ( para las columnas ) de manera que obtengo la matriz completa
-	for( columna = 0; columna < tam; columna++ ){
-		matriz[columna] = (planta*) malloc (tam*(sizeof(planta)));
-		//aux[columna] = (planta*) malloc (tam*(sizeof(planta)));  
+	for( columna = 0; columna < n; columna++ ){
+		matriz[columna] = (planta*) malloc (n*(sizeof(planta)));
 		}	
 	
-	// Inicializamos la matriz
-	inicializar_matriz( );
-	tiempo_inicial= clock();
+	inicializar_matriz();
 	
-	// Imprimimos la matriz
-	//imprimir_matriz( );
-	
-	
+	if( proceso == 0 ){
+		Tinicial = MPI_Wtime();
+		printf( "Comienza el programa MPI \n");
+	}
+
 	for( s = 1; s <= semanas; s++ ){
          
-         // Imprimimos la matriz
-         //printf("Semana %d \n", s);
-	     //imprimir_matriz( );
-         
-         for( fila = 0; fila < tam; fila++ ){
+		completar_matriz(); 
+		MPI_Barrier(MPI_COMM_WORLD);
+         for( fila = 0; fila < n; fila++ ){
+
               
-              for( columna = 0; columna < tam; columna++ ){
-                   
-                   actualizar_matriz( fila , columna , s );           
+              for( columna = 0; columna < n; columna++ ){
+                   	actualizar_matriz( fila , columna , s );
+                   	          
                        
-                   }
-              }
+               }
+         }
+
+
          
     }
-    
-	tiempo_final= clock();
+    if( proceso == 0 ){
+    	Tfinal= MPI_Wtime();
+    	duracion= Tfinal - Tinicial;
+		printf("El tiempo %d es de: %lf segundos \n", tam, duracion);
+    }
+
 	free( matriz );
 	
-	duracion= tiempo_final - tiempo_inicial; 
-	duracion/= CLOCKS_PER_SEC; 
-	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
+	MPI_Finalize();
+	
 	system("pause");
 	return 0;
 }

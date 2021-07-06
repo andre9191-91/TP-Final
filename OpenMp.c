@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 #include <time.h>
 
 /*
-Se compila: gcc secuencial.c -o sec
-Se ejecuta: ./sec tamaño_matriz semanas
+Trabajo Práctico Final - OpenMP 
+Maldonado Andrea 
+Moran Marcos 
+
+Se compila: gcc -fopenmp -o openmp OpenMp.c
+Se ejecuta: ./openmp tamaño_matriz semanas
 
 Los colores de las plantas son:
 	o Blanco: Árbol podado
@@ -32,7 +37,8 @@ void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
 	
-			  
+		
+	#pragma omp parallel for collapse(2) num_threads(4) private(columna)	
 	for( fila = 0; fila < tam; fila++ ) {
 			
 		for( columna = 0; columna < tam; columna++ ) {
@@ -299,7 +305,7 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
         }
      
      // Recorro los vecinos para contar los colores
-     for( ; limite_inferior_fila < limite_superior_fila; limite_inferior_fila++ ){
+	 for( ; limite_inferior_fila < limite_superior_fila; limite_inferior_fila++ ){
           for( limite_inferior_columna = limite_auxiliar; limite_inferior_columna < limite_superior_columna; limite_inferior_columna++ ){
                if( ! ( limite_inferior_fila == fila && limite_inferior_columna == columna ) ){
                    switch( matriz[limite_inferior_fila][limite_inferior_columna].estado ){
@@ -420,14 +426,14 @@ int main( int argc, char *argv[] ){
 	int s, fila, columna, proximo_estado;
 	clock_t tiempo_inicial , tiempo_final;
 	long int duracion; 
-	
+
 	// Obtenemos el tamaño de la matriz que viene por parametro
 	tam = atoi(argv[1]);
 	
 	// Obtenemos la cantidad de semanas que vienen por parametro
 	semanas = atoi(argv[2]);
 	
-	printf( "Comienza el programa Secuencial \n");
+	printf( "Comienza el programa en OpenMp\n");
 	
 	
 	// Pedimos memoria para toda una fila de la matriz y para la matriz que usaremos para calcular el proximo estado
@@ -443,7 +449,7 @@ int main( int argc, char *argv[] ){
 	// Inicializamos la matriz
 	inicializar_matriz( );
 	tiempo_inicial= clock();
-	
+
 	// Imprimimos la matriz
 	//imprimir_matriz( );
 	
@@ -454,6 +460,7 @@ int main( int argc, char *argv[] ){
          //printf("Semana %d \n", s);
 	     //imprimir_matriz( );
          
+		 #pragma omp parallel for collapse(2) num_threads(4) private(columna)
          for( fila = 0; fila < tam; fila++ ){
               
               for( columna = 0; columna < tam; columna++ ){
@@ -463,14 +470,18 @@ int main( int argc, char *argv[] ){
                    }
               }
          
-    }
+         }
     
 	tiempo_final= clock();
+
 	free( matriz );
 	
 	duracion= tiempo_final - tiempo_inicial; 
 	duracion/= CLOCKS_PER_SEC; 
 	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
+	
+	
+	
 	system("pause");
 	return 0;
 }
