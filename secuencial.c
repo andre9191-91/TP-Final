@@ -443,6 +443,8 @@ int main( int argc, char *argv[] ){
 	// Inicializamos la matriz
 	inicializar_matriz( );
 	tiempo_inicial= clock();
+	time_t tInicial, tFinal;
+    time(&tInicial)
 	
 	// Imprimimos la matriz
 	//imprimir_matriz( );
@@ -466,11 +468,15 @@ int main( int argc, char *argv[] ){
     }
     
 	tiempo_final= clock();
+	time(&tFinal);
+    time_t tDuracion = tFinal - tInicial;
 	free( matriz );
 	
 	duracion= tiempo_final - tiempo_inicial; 
 	duracion/= CLOCKS_PER_SEC; 
 	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
+	
+	printf("Time : %ld seconds.\n", tDuracion);
 	system("pause");
 	return 0;
 }
