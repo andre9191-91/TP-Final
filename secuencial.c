@@ -419,7 +419,7 @@ int main( int argc, char *argv[] ){
 	
 	int s, fila, columna, proximo_estado;
 	clock_t tiempo_inicial , tiempo_final;
-	long int duracion; 
+	double duracion; 
 	
 	// Obtenemos el tamaño de la matriz que viene por parametro
 	tam = atoi(argv[1]);
@@ -472,7 +472,7 @@ int main( int argc, char *argv[] ){
     time_t tDuracion = tFinal - tInicial;
 	free( matriz );
 	
-	duracion= tiempo_final - tiempo_inicial; 
+	duracion= double (tiempo_final - tiempo_inicial); 
 	duracion/= CLOCKS_PER_SEC; 
 	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
 	
