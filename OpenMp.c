@@ -9,8 +9,8 @@ Maldonado Andrea
 Moran Marcos 
 
 
-Se compila: gcc OpenMp.c -o openmp
-Se ejecuta: ./sec tamaño_matriz semanas
+Se compila: gcc -fopenmp -o openmp OpenMp.c
+Se ejecuta: ./openmp tamaño_matriz semanas
 
 Los colores de las plantas son:
 	o Blanco: Árbol podado
@@ -459,9 +459,8 @@ int main( int argc, char *argv[] ){
          // Imprimimos la matriz
          //printf("Semana %d \n", s);
 	     //imprimir_matriz( );
-         
+         #pragma omp parallel for collapse(2) num_threads(2) private(columna)
          for( fila = 0; fila < tam; fila++ ){
-              #pragma omp parallel for collapse(2) num_threads(2) private(columna)
               for( columna = 0; columna < tam; columna++ ){
                    
                    actualizar_matriz( fila , columna , s );           
