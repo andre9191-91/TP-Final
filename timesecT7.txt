@@ -1,0 +1,2 @@
+Comienza el programa Secuencial 
+El tiempo 200 es de: 15.804142 segundos 

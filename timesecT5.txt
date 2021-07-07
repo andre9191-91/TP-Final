@@ -1,0 +1,2 @@
+Comienza el programa Secuencial 
+El tiempo 800 es de: 139.428251 segundos 

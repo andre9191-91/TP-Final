@@ -1,0 +1,2 @@
+Comienza el programa Secuencial 
+El tiempo 1500 es de: 260.342417 segundos 
