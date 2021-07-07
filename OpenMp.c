@@ -1,22 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <time.h>
+#include <omp.h>
 
 /*
-Trabajo Pr√°ctico Final - OpenMP 
+Trabajo Pr·ctico Final - OpenMp 
 Maldonado Andrea 
 Moran Marcos 
 
-Se compila: gcc -fopenmp -o openmp OpenMp.c
-Se ejecuta: ./openmp tama√±o_matriz semanas
+
+Se compila: gcc OpenMp.c -o openmp
+Se ejecuta: ./sec tamaÒo_matriz semanas
 
 Los colores de las plantas son:
-	o Blanco: √Årbol podado
-	o Azul: Enfermo con tratamiento antif√∫ngico
-	o Rojo: Enfermo con s√≠ntomas visibles
-	o Naranja: Infectado con esporas (Enfermo sin s√≠ntomas visibles)
-	o Verde: √Årbol sano
+	o Blanco: ¡rbol podado
+	o Azul: Enfermo con tratamiento antif˙ngico
+	o Rojo: Enfermo con sÌntomas visibles
+	o Naranja: Infectado con esporas (Enfermo sin sÌntomas visibles)
+	o Verde: ¡rbol sano
 */
 
 // Defino el tipo de celda
@@ -30,14 +31,14 @@ typedef struct planta{
 // Defino la matriz y una auxiliar para calcular las actualizaciones	
 planta **matriz, **aux;
 
-// Defino el tama√±o de la matriz y la cantidad de semanas
+// Defino el tamaÒo de la matriz y la cantidad de semanas
 int tam , semanas ;
 
 void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
-		
-	#pragma omp parallel for collapse(2) num_threads(4) private(columna)	
+	
+	#pragma omp parallel for collapse(2) num_threads(2) private(columna)		  
 	for( fila = 0; fila < tam; fila++ ) {
 			
 		for( columna = 0; columna < tam; columna++ ) {
@@ -304,7 +305,7 @@ void actualizar_matriz( int fila , int columna, int semana_actual ){
         }
      
      // Recorro los vecinos para contar los colores
-	 for( ; limite_inferior_fila < limite_superior_fila; limite_inferior_fila++ ){
+     for( ; limite_inferior_fila < limite_superior_fila; limite_inferior_fila++ ){
           for( limite_inferior_columna = limite_auxiliar; limite_inferior_columna < limite_superior_columna; limite_inferior_columna++ ){
                if( ! ( limite_inferior_fila == fila && limite_inferior_columna == columna ) ){
                    switch( matriz[limite_inferior_fila][limite_inferior_columna].estado ){
@@ -425,14 +426,14 @@ int main( int argc, char *argv[] ){
 	int s, fila, columna, proximo_estado;
 	clock_t tiempo_inicial , tiempo_final;
 	double duracion; 
-
-	// Obtenemos el tama√±o de la matriz que viene por parametro
+	
+	// Obtenemos el tamaÒo de la matriz que viene por parametro
 	tam = atoi(argv[1]);
 	
 	// Obtenemos la cantidad de semanas que vienen por parametro
 	semanas = atoi(argv[2]);
 	
-	printf( "Comienza el programa en OpenMp\n");
+	printf( "Comienza el programa OpenMp \n");
 	
 	
 	// Pedimos memoria para toda una fila de la matriz y para la matriz que usaremos para calcular el proximo estado
@@ -448,7 +449,7 @@ int main( int argc, char *argv[] ){
 	// Inicializamos la matriz
 	inicializar_matriz( );
 	tiempo_inicial= clock();
-
+	
 	// Imprimimos la matriz
 	//imprimir_matriz( );
 	
@@ -459,9 +460,8 @@ int main( int argc, char *argv[] ){
          //printf("Semana %d \n", s);
 	     //imprimir_matriz( );
          
-		 #pragma omp parallel for collapse(2) num_threads(4) private(columna)
          for( fila = 0; fila < tam; fila++ ){
-              
+              #pragma omp parallel for collapse(2) num_threads(2) private(columna)
               for( columna = 0; columna < tam; columna++ ){
                    
                    actualizar_matriz( fila , columna , s );           
@@ -472,15 +472,11 @@ int main( int argc, char *argv[] ){
     }
     
 	tiempo_final= clock();
-
 	free( matriz );
 	
 	duracion= tiempo_final - tiempo_inicial; 
 	duracion/= CLOCKS_PER_SEC; 
-	
 	printf("El tiempo %d es de: %f segundos \n", tam, duracion);
-	
-	
 	
 	system("pause");
 	return 0;
