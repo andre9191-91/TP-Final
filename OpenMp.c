@@ -37,7 +37,7 @@ void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
 		
-	#pragma omp parallel for collapse(2) num_threads(4) private(columna	
+	#pragma omp parallel for collapse(2) num_threads(4) private(columna)	
 	for( fila = 0; fila < tam; fila++ ) {
 			
 		for( columna = 0; columna < tam; columna++ ) {
