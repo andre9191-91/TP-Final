@@ -37,7 +37,7 @@ void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
 		
-	#pragma omp parallel for num_threads(4) private(columna)	
+	#pragma omp parallel for num_threads(2) private(columna)	
 	for( fila = 0; fila < tam; fila++ ) {
 			
 		for( columna = 0; columna < tam; columna++ ) {
@@ -459,7 +459,7 @@ int main( int argc, char *argv[] ){
          //printf("Semana %d \n", s);
 	     //imprimir_matriz( );
          
-		 #pragma omp parallel for num_threads(4) private(columna)
+		 #pragma omp parallel for num_threads(2) private(columna)
          for( fila = 0; fila < tam; fila++ ){
               
               for( columna = 0; columna < tam; columna++ ){
@@ -469,7 +469,7 @@ int main( int argc, char *argv[] ){
                    }
               }
          
-         }
+    }
     
 	tiempo_final= clock();
 
@@ -477,6 +477,7 @@ int main( int argc, char *argv[] ){
 	
 	duracion= tiempo_final - tiempo_inicial; 
 	duracion/= CLOCKS_PER_SEC; 
+	
 	printf("El tiempo %d es de: %f segundos \n", tam, duracion);
 	
 	
