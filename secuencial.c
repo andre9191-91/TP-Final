@@ -3,6 +3,11 @@
 #include <time.h>
 
 /*
+Trabajo Práctico Final - Secuencial 
+Maldonado Andrea 
+Moran Marcos 
+
+
 Se compila: gcc secuencial.c -o sec
 Se ejecuta: ./sec tamaño_matriz semanas
 
