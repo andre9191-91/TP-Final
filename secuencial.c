@@ -443,8 +443,6 @@ int main( int argc, char *argv[] ){
 	// Inicializamos la matriz
 	inicializar_matriz( );
 	tiempo_inicial= clock();
-	time_t tInicial, tFinal;
-    time(&tInicial);
 	
 	// Imprimimos la matriz
 	//imprimir_matriz( );
