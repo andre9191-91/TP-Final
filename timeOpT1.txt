@@ -1,0 +1,4 @@
+Comienza el programa en OpenMp
+El tiempo 200 es de: 116.928548 segundos 
+Comienza el programa en OpenMp
+El tiempo 200 es de: 118.388482 segundos 

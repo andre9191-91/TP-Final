@@ -1,0 +1,24 @@
+Comienza el programa MPI 
+El tiempo 800 es de: 34.864561 segundos 
+Comienza el programa MPI 
+El tiempo 1500 es de: 68.569523 segundos 
+Comienza el programa MPI 
+El tiempo 200 es de: 4.068106 segundos 
+Comienza el programa MPI 
+El tiempo 800 es de: 34.905651 segundos 
+Comienza el programa MPI 
+El tiempo 1500 es de: 68.228777 segundos 
+Comienza el programa MPI 
+El tiempo 200 es de: 4.133161 segundos 
+Comienza el programa MPI 
+El tiempo 800 es de: 34.924363 segundos 
+Comienza el programa MPI 
+El tiempo 1500 es de: 68.982477 segundos 
+Comienza el programa MPI 
+El tiempo 200 es de: 4.158153 segundos 
+Comienza el programa MPI 
+El tiempo 800 es de: 34.782761 segundos 
+Comienza el programa MPI 
+El tiempo 1500 es de: 68.229336 segundos 
+Comienza el programa MPI 
+El tiempo 200 es de: 4.071154 segundos 

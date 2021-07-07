@@ -1,0 +1,4 @@
+Comienza el programa MPI 
+El tiempo 200 es de: 4.133489 segundos 
+Comienza el programa MPI 
+El tiempo 200 es de: 4.234031 segundos 

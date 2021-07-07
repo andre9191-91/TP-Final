@@ -1,0 +1,2 @@
+Comienza el programa en OpenMp
+El tiempo 1500 es de: 2098.987233 segundos 

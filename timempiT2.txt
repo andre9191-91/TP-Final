@@ -1,0 +1,2 @@
+Comienza el programa MPI 
+El tiempo 800 es de: 35.036753 segundos 

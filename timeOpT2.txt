@@ -1,0 +1,2 @@
+Comienza el programa en OpenMp
+El tiempo 800 es de: 1019.173023 segundos 

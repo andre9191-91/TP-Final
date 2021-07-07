@@ -1,0 +1,2 @@
+Comienza el programa MPI 
+El tiempo 1500 es de: 82.140980 segundos 
