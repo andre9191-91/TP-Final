@@ -4,19 +4,19 @@
 #include <time.h>
 
 /*
-Trabajo Pr·ctico Final - OpenMP 
+Trabajo Pr√°ctico Final - OpenMP 
 Maldonado Andrea 
 Moran Marcos 
 
 Se compila: gcc -fopenmp -o openmp OpenMp.c
-Se ejecuta: ./openmp tamaÒo_matriz semanas
+Se ejecuta: ./openmp tama√±o_matriz semanas
 
 Los colores de las plantas son:
-	o Blanco: ¡rbol podado
-	o Azul: Enfermo con tratamiento antif˙ngico
-	o Rojo: Enfermo con sÌntomas visibles
-	o Naranja: Infectado con esporas (Enfermo sin sÌntomas visibles)
-	o Verde: ¡rbol sano
+	o Blanco: √Årbol podado
+	o Azul: Enfermo con tratamiento antif√∫ngico
+	o Rojo: Enfermo con s√≠ntomas visibles
+	o Naranja: Infectado con esporas (Enfermo sin s√≠ntomas visibles)
+	o Verde: √Årbol sano
 */
 
 // Defino el tipo de celda
@@ -30,13 +30,12 @@ typedef struct planta{
 // Defino la matriz y una auxiliar para calcular las actualizaciones	
 planta **matriz, **aux;
 
-// Defino el tamaÒo de la matriz y la cantidad de semanas
+// Defino el tama√±o de la matriz y la cantidad de semanas
 int tam , semanas ;
 
 void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
-	
 		
 	#pragma omp parallel for collapse(2) num_threads(4) private(columna)	
 	for( fila = 0; fila < tam; fila++ ) {
@@ -425,9 +424,9 @@ int main( int argc, char *argv[] ){
 	
 	int s, fila, columna, proximo_estado;
 	clock_t tiempo_inicial , tiempo_final;
-	long int duracion; 
+	double duracion; 
 
-	// Obtenemos el tamaÒo de la matriz que viene por parametro
+	// Obtenemos el tama√±o de la matriz que viene por parametro
 	tam = atoi(argv[1]);
 	
 	// Obtenemos la cantidad de semanas que vienen por parametro
@@ -478,7 +477,7 @@ int main( int argc, char *argv[] ){
 	
 	duracion= tiempo_final - tiempo_inicial; 
 	duracion/= CLOCKS_PER_SEC; 
-	printf("El tiempo %d es de: %ld segundos \n", tam, duracion);
+	printf("El tiempo %d es de: %f segundos \n", tam, duracion);
 	
 	
 	
