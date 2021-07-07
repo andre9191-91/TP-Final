@@ -3,7 +3,7 @@
 #-------------------------------------------------------------
 #-------- ejecuta secuencial para los diferentes tamaños------
 # antes de ejecutar este script.. darle permisos:-------------
-#   chmod 777 ejecutar_todo_openMp.bash  
+#   chmod 777 ejecutar_todo_openMp4.bash  
 #-------------------------------------------------------------
 
 ./openmp 200 2000  >> timeGlobalOpenMp.txt
