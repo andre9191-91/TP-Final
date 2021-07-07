@@ -37,7 +37,7 @@ void inicializar_matriz( ){
 	
 	int s, fila, columna, random;
 		
-	#pragma omp parallel for num_threads(4) private(columna)	
+	#pragma omp parallel for num_threads(8) private(columna)	
 	for( fila = 0; fila < tam; fila++ ) {
 			
 		for( columna = 0; columna < tam; columna++ ) {
@@ -459,7 +459,7 @@ int main( int argc, char *argv[] ){
          //printf("Semana %d \n", s);
 	     //imprimir_matriz( );
          
-		 #pragma omp parallel for num_threads(4) private(columna)
+		 #pragma omp parallel for num_threads(8) private(columna)
          for( fila = 0; fila < tam; fila++ ){
               
               for( columna = 0; columna < tam; columna++ ){
